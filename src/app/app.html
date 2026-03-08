@@ -1,15 +1,14 @@
-<main style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #eee; padding: 20px;">
+<main style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background: #eee; padding: 20px; gap: 20px; flex-wrap: wrap;">
+  <!-- Card de Carga -->
   <mat-card style="width: 100%; max-width: 500px; padding: 20px;">
     <mat-card-header>
       <mat-card-title>{{ title() }}</mat-card-title>
     </mat-card-header>
 
     <mat-card-content style="margin-top: 20px; text-align: center;">
-      
-      
       <input type="file" #fileInput (change)="onFileSelected($event)" accept=".vtt" style="display: none">
       <button mat-raised-button color="primary" (click)="fileInput.click()" [disabled]="isUploading()">
-      <mat-icon>description</mat-icon>
+        <mat-icon>description</mat-icon>
         Subir Archivo Transcripción (.VTT)
       </button>
 
@@ -24,4 +23,38 @@
       </div>
     </mat-card-content>
   </mat-card>
+
+  <!-- Card de Archivos Generados -->
+  <mat-card style="width: 100%; max-width: 500px; padding: 20px;">
+    <mat-card-header>
+      <mat-card-title>Archivos Generados</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content style="margin-top: 20px;">
+      <div *ngIf="outputFiles().length === 0" style="text-align: center; color: #999; padding: 20px;">
+        <mat-icon style="font-size: 48px; width: 48px; height: 48px;">folder_open</mat-icon>
+        <p>No hay archivos generados aún</p>
+      </div>
+
+      <mat-list *ngIf="outputFiles().length > 0">
+        <mat-list-item *ngFor="let file of outputFiles()" style="cursor: pointer;" (click)="downloadFile(file.name)">
+          <mat-icon matListItemIcon>
+            {{ file.name.endsWith('.docx') ? 'article' : file.name.endsWith('.png') ? 'image' : 'insert_drive_file' }}
+          </mat-icon>
+          <span matListItemTitle>{{ file.name }}</span>
+          <span matListItemLine>{{ formatSize(file.size) }} · {{ file.date }}</span>
+          <button mat-icon-button matListItemMeta>
+            <mat-icon>download</mat-icon>
+          </button>
+        </mat-list-item>
+      </mat-list>
+
+      <div style="text-align: center; margin-top: 10px;">
+        <button mat-button color="accent" (click)="loadOutputFiles()">
+          <mat-icon>refresh</mat-icon> Actualizar lista
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
 </main>
+
