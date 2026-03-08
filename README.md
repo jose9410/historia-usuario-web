@@ -1,59 +1,60 @@
-# KonciliaWeb
+# Koncilia - Generador de Historias de Usuario (Frontend)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.0.
+Este proyecto es la interfaz web del sistema **Koncilia**, diseñada para facilitar la carga de transcripciones de reuniones (.VTT) y la gestión de historias de usuario generadas por IA.
 
-## Development server
+## 🚀 Características
 
-To start a local development server, run:
+- **Carga de Archivos**: Interfaz intuitiva para subir archivos `.vtt`.
+- **Procesamiento en Tiempo Real**: Visualización del estado del procesamiento mediante Semantic Kernel.
+- **Gestión de Salidas**: Listado dinámico de archivos generados (DOCX, SVG, PUML).
+- **Descarga Directa**: Capacidad de descargar los artefactos generados directamente al equipo local.
+- **Diseño Premium**: Desarrollado con Angular Material, siguiendo una estética moderna y profesional con un fondo azul claro (#e3f2fd).
+
+## 🛠️ Tecnologías
+
+- **Framework**: Angular 19+
+- **Estilos**: Angular Material & Vanilla CSS
+- **Servidor Web**: Nginx (para el contenedor de producción)
+- **Comunicación**: HttpClient con Proxy para el Backend API
+
+## 🔧 Desarrollo Local
+
+Para iniciar el servidor de desarrollo local, ejecute:
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Navegue a `http://localhost:4200/`. La aplicación se recargará automáticamente si modifica los archivos fuente.
 
-## Code scaffolding
+## 🏗️ Construcción (Build)
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+Para compilar el proyecto ejecute:
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Los artefactos de compilación se almacenarán en el directorio `dist/`.
 
-## Running unit tests
+## 📦 Despliegue con Docker
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+El proyecto incluye un `Dockerfile` multietapa para servir la aplicación con Nginx.
 
 ```bash
-ng e2e
+docker build -t madu1206/historia-usuario-web:latest .
+docker run -p 80:80 madu1206/historia-usuario-web:latest
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## ☸️ Infraestructura y GitOps
 
-## Additional Resources
+Este repositorio está integrado en un flujo **GitOps** gestionado por **Argo CD**.
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- **CI/CD**: Configurado con GitHub Actions. Se dispara al crear tags que comienzan con `v*` (ej. `v1.2.0`).
+- **Kubernetes**: Desplegado mediante Helm Charts (`charts/historia-usuario-web`).
+- **Gateway**: Nginx está configurado para actuar como reverse proxy, redirigiendo las peticiones `/api/*` al servicio del backend.
+
+---
+© 2026 Koncilia Automation. Todos los derechos reservados.
+
