@@ -3,7 +3,7 @@
   justify-content: center;
   align-items: flex-start;
   min-height: 100vh;
-  background: linear-gradient(135deg, #e0eafc 0%, #cfdef3 100%);
+  background: #0a0a0a;
   padding: 20px;
   gap: 20px;
   flex-wrap: wrap;
