@@ -1,4 +1,4 @@
-<main style="display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; background: #eee; padding: 20px; gap: 20px; flex-wrap: wrap;">
+<main class="main-container">
   <!-- Card de Carga -->
   <mat-card style="width: 100%; max-width: 500px; padding: 20px;">
     <mat-card-header>
@@ -17,7 +17,8 @@
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
       </div>
 
-      <div *ngIf="result()" style="margin-top: 20px; background: #fff; padding: 10px; border-radius: 5px; text-align: left;">
+      <div *ngIf="result()"
+        style="margin-top: 20px; background: #fff; padding: 10px; border-radius: 5px; text-align: left;">
         <h3>Resultado:</h3>
         <pre>{{ result() | json }}</pre>
       </div>
@@ -57,4 +58,3 @@
     </mat-card-content>
   </mat-card>
 </main>
-
