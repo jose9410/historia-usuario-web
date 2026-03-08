@@ -8,7 +8,7 @@ Este proyecto es la interfaz web del sistema **Koncilia**, diseñada para facili
 - **Procesamiento en Tiempo Real**: Visualización del estado del procesamiento mediante Semantic Kernel.
 - **Gestión de Salidas**: Listado dinámico de archivos generados (DOCX, SVG, PUML).
 - **Descarga Directa**: Capacidad de descargar los artefactos generados directamente al equipo local.
-- **Diseño Premium**: Desarrollado con Angular Material, siguiendo una estética moderna y profesional con un fondo azul claro (#e3f2fd).
+- **Diseño**: Desarrollado con Angular Material.
 
 ## 🛠️ Tecnologías
 
