@@ -1,0 +1,162 @@
+<div class="component-root">
+  <main class="main-content">
+    <!-- ═══ Form ═══ -->
+    <section class="form-section" *ngIf="!jobId">
+      <div class="section-header">
+        <h2>🎯 Configure Application</h2>
+        <p>Select the application to start the automation process.</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="process-form">
+
+        <!-- ── Process ── -->
+        <div class="process-selector">
+          <div class="form-group full-width">
+            <label for="procesoSelector">SELECT APPLICATION</label>
+            <div class="select-wrapper">
+              <select
+                id="procesoSelector"
+                [(ngModel)]="aplicacionSeleccionada"
+                name="procesoSelector"
+                class="form-input form-select"
+              >
+                <option value="" disabled selected>— Select a configured application —</option>
+                <option *ngFor="let a of catalogoAplicaciones" [value]="a.nombre">
+                  {{ a.nombre }}
+                </option>
+              </select>
+              <span class="select-arrow">▼</span>
+            </div>
+            <small class="form-hint" *ngIf="catalogoLoading">⏳ Loading catalog...</small>
+            <small class="form-hint" *ngIf="!catalogoLoading && subProcesosDisponibles.length === 0"
+                   style="color: var(--color-error)">
+              ⚠ No processes configured. Check the "Aplicaciones" section in appsettings.json.
+            </small>
+          </div>
+        </div>
+
+        <!-- Global Error -->
+        <div class="error-banner" *ngIf="errorMessage">
+          <span class="error-icon">⚠</span>
+          {{ errorMessage }}
+          <button class="error-close" type="button" (click)="errorMessage = null">✕</button>
+        </div>
+
+        <!-- Submit -->
+        <div class="submit-container" style="margin-top: 30px;">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            style="width: 100%; height: 54px; font-size: 1.1rem;"
+            [disabled]="isSubmitting || !aplicacionSeleccionada"
+          >
+            <mat-icon *ngIf="!isSubmitting">rocket_launch</mat-icon>
+            <span *ngIf="!isSubmitting">Start Automation</span>
+            
+            <span *ngIf="isSubmitting" class="loading-content">
+              <span class="spinner-small"></span>
+              Starting...
+            </span>
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ═══ Status Panel ═══ -->
+    <section class="status-section" *ngIf="jobId">
+      <div class="section-header">
+        <h2>📡 Application Running</h2>
+        <p>
+          Job ID: <code class="job-id">{{ jobId }}</code>
+          <span class="duration" *ngIf="jobState">· {{ getDuration() }}</span>
+        </p>
+      </div>
+
+      <!-- Steps Timeline -->
+      <div class="timeline">
+        <div
+          *ngFor="let step of steps; let i = index"
+          class="timeline-step"
+          [class.completed]="isStepCompleted(i)"
+          [class.active]="isStepActive(i)"
+          [class.error]="jobState?.status === 'Error' && isStepActive(i)"
+        >
+          <div class="step-indicator">
+            <div class="step-circle">
+              <span *ngIf="isStepCompleted(i) && !isStepActive(i)">✓</span>
+              <span *ngIf="isStepActive(i) && jobState?.status !== 'Completado' && jobState?.status !== 'Error'" class="step-spinner"></span>
+              <span *ngIf="isStepActive(i) && jobState?.status === 'Completado'">✓</span>
+              <span *ngIf="isStepActive(i) && jobState?.status === 'Error'">✕</span>
+              <span *ngIf="!isStepCompleted(i) && !isStepActive(i)">{{ i + 1 }}</span>
+            </div>
+            <div class="step-line" *ngIf="i < steps.length - 1"></div>
+          </div>
+          <div class="step-content">
+            <span class="step-icon">{{ step.icon }}</span>
+            <span class="step-label">{{ step.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Current Status Message -->
+      <div class="status-message" *ngIf="jobState as activeJob">
+        <div
+          class="status-badge"
+          [style.background]="activeJob.status === 'Error' ? 'var(--color-error-glow)' :
+                              activeJob.status === 'Completado' ? 'var(--color-success-glow)' :
+                              'var(--color-accent-glow)'"
+        >
+          <span>{{ statusInfo[activeJob.status].icon }}</span>
+          <span>{{ statusInfo[activeJob.status].label }}</span>
+        </div>
+        <p class="status-text">{{ activeJob.mensaje }}</p>
+      </div>
+
+      <!-- Results Panel -->
+      <div class="results-panel" *ngIf="jobState?.status === 'Completado' && jobState as resultJob">
+        <h3 class="results-title">✅ Process Completed</h3>
+        <div class="metrics-grid">
+          <div class="metric-card success">
+            <div class="metric-value" style="font-size: 1.4rem; text-align: center;">{{ resultJob.nombreProceso }}</div>
+            <div class="metric-label">Executed Process</div>
+          </div>
+          <div class="metric-card accent">
+            <div class="metric-value" style="font-size: 1.4rem; text-align: center;">
+              {{ getDurationMinutos() }}
+            </div>
+            <div class="metric-label">Total Duration</div>
+          </div>
+        </div>
+        <p class="status-text" style="margin-top: 12px; font-weight: 500;">{{ resultJob.mensaje }}</p>
+        
+        <!-- List of executed processes -->
+        <ul *ngIf="resultJob.detalle && resultJob.detalle.length > 0" class="process-list" style="margin-top: 16px; padding: 12px 18px; background: rgba(0,0,0,0.03); border-radius: 8px; list-style-type: none;">
+          <li *ngFor="let item of resultJob.detalle" style="padding: 6px 0; border-bottom: 1px solid var(--border-subtle); font-size: 0.9rem; color: var(--text-secondary);">
+            {{ item }}
+          </li>
+        </ul>
+      </div>
+
+      <!-- Error Panel -->
+      <div class="error-panel" *ngIf="jobState?.status === 'Error' && jobState as errorJob">
+        <div class="error-content">
+          <span class="error-big-icon">❌</span>
+          <h3>Application Error</h3>
+          <p>{{ errorJob.errorDetalle }}</p>
+        </div>
+      </div>
+
+      <!-- Button: New Application -->
+      <button
+        class="btn-secondary"
+        type="button"
+        (click)="resetForm()"
+        *ngIf="jobState?.status === 'Completado' || jobState?.status === 'Error'"
+      >
+        <span class="btn-icon">🔄</span>
+        New Application
+      </button>
+    </section>
+  </main>
+</div>

@@ -1,0 +1,94 @@
+<div class="ingestor-dashboard">
+  
+  <div class="dashboard-header">
+    <div class="header-title">
+      <div class="icon-wrapper gradient-blue">
+        <mat-icon>auto_awesome</mat-icon>
+      </div>
+      <div>
+        <h2>{{ title() }}</h2>
+        <p>Upload meeting transcriptions to generate user stories automatically.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <!-- ═══ Upload Section ═══ -->
+    <div class="glass-panel upload-panel">
+      <div class="panel-header">
+        <h3>📄 Source Transcription</h3>
+      </div>
+      
+      <div class="panel-content">
+        <div class="upload-zone" [class.uploading]="isUploading()" (click)="!isUploading() && fileInput.click()">
+          <input type="file" #fileInput (change)="onFileSelected($event)" accept=".vtt" style="display: none">
+          
+          <div class="upload-content" *ngIf="!isUploading()">
+            <div class="upload-icon-pulse">
+              <mat-icon>cloud_upload</mat-icon>
+            </div>
+            <h4>Select VTT File</h4>
+            <p>Click to browse or drag and drop your Microsoft Teams transcription file here.</p>
+            <button class="btn-upload" type="button">
+              Browse Files
+            </button>
+          </div>
+
+          <div class="uploading-state" *ngIf="isUploading()">
+            <div class="spinner-ring"></div>
+            <h4>Processing AI Generation...</h4>
+            <p>Analyzing transcription and generating structured deliverables.</p>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div class="result-box" *ngIf="result() && !isUploading()">
+          <div class="result-header">
+            <mat-icon>check_circle</mat-icon>
+            <span>Generation Complete</span>
+          </div>
+          <pre class="result-code">{{ result() | json }}</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Deliverables Section ═══ -->
+    <div class="glass-panel deliverables-panel">
+      <div class="panel-header flex-between">
+        <h3>📦 Deliverables</h3>
+        <button class="btn-icon-only" (click)="loadOutputFiles()" title="Refresh List">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+
+      <div class="panel-content">
+        <!-- Empty State -->
+        <div class="empty-state" *ngIf="outputFiles().length === 0">
+          <div class="empty-icon">
+            <mat-icon>folder_open</mat-icon>
+          </div>
+          <h4>No Deliverables Yet</h4>
+          <p>Upload a transcription to see the generated files here.</p>
+        </div>
+
+        <!-- File List -->
+        <div class="file-list" *ngIf="outputFiles().length > 0">
+          <div class="file-item" *ngFor="let file of outputFiles()" (click)="downloadFile(file.name)">
+            <div class="file-icon" [ngClass]="getFileColorClass(file.name)">
+              <mat-icon>{{ getFileIcon(file.name) }}</mat-icon>
+            </div>
+            <div class="file-details">
+              <span class="file-name">{{ file.name }}</span>
+              <span class="file-meta">{{ formatSize(file.size) }} &bull; {{ file.date }}</span>
+            </div>
+            <div class="file-action">
+              <button class="btn-download">
+                <mat-icon>download</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
